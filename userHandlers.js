@@ -40,8 +40,28 @@ const setUser = (req, res) =>
         });
 };
 
+// Update user
+const updateUser = (req, res) =>
+{
+    const id = Number.parseInt(req.params.id, 10),
+        { firstName, lastName, email, city, language } = req.body;
+    database
+        .query("UPDATE users SET firstname = ?, lastname = ?, email = ?, city = ?, language = ? WHERE id = ?", [firstName, lastName, email, city, language, id])
+        .then(([result]) =>
+        {
+            if (result.affectedRows) res.sendStatus(204);
+            else res.status(404).send('User not found');
+        })
+        .catch(err =>
+        {
+            console.error(err);
+            res.status(500).send('Error saving the user');
+        });
+};
+
 module.exports =
 {
     getUsers,
-    setUser
+    setUser,
+    updateUser
 };
