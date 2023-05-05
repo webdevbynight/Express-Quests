@@ -30,8 +30,18 @@ const database = require('./database');
 
 const getMovies = (req, res) =>
 {
+    const color = req.query.color ? req.query.color : null,
+        max_duration = req.query.max_duration !== null ? Number.parseInt(req.query.max_duration, 10) : null,
+        initialSql = "SELECT * FROM movies",
+        where = [];
+    if (color !== null) where.push({ column: 'color', value: color, operator: '=' });
+    if (max_duration !== null) where.push({ column: 'duration', value: max_duration, operator: '<=' });
     database
-        .query("SELECT * FROM movies")
+        .query
+        (
+            where.reduce((sql, { column, operator }, index) => `${sql} ${index === 0 ? "WHERE" : "AND"} ${column} ${operator} ?`, initialSql),
+            where.map(({ value }) => value)
+        )
         .then(([movies]) => res.json(movies))
         .catch(err =>
         {
