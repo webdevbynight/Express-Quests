@@ -26,4 +26,22 @@ const getUsers = (req, res) =>
         });
 };
 
-module.exports = { getUsers };
+// Set user
+const setUser = (req, res) =>
+{
+    const { firstName, lastName, email, city, language } = req.body;
+    database
+        .query("INSERT INTO users (firstname, lastname, email, city, language) VALUES (?, ?, ?, ?, ?)", [firstName, lastName, email, city, language])
+        .then(([result]) => res.location(`/api/users/${result.insertId}`).sendStatus(201))
+        .catch(err =>
+        {
+            console.error(err);
+            res.status(500).send('Error saving the user');
+        });
+};
+
+module.exports =
+{
+    getUsers,
+    setUser
+};
