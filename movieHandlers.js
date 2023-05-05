@@ -64,7 +64,7 @@ const setMovie = (req, res) =>
             console.error(err);
             res.status(500).send('Error saving the movie');
         });
-    }
+};
     
 const updateMovie = (req, res) =>
 {
@@ -84,10 +84,28 @@ const updateMovie = (req, res) =>
         });
 };
 
+const deleteMovie = (req, res) =>
+{
+    const id = Number.parseInt(req.params.id, 10);
+    database
+        .query("DELETE FROM movies WHERE id = ?", [id])
+        .then(([result]) =>
+        {
+            if (result.affectedRows) res.sendStatus(204);
+            else res.status(404).send('Movie not found');
+        })
+        .catch(err =>
+        {
+            console.error(err);
+            res.status(500).send('Error removing the movie');
+        });
+}
+    
 module.exports =
 {
     getMovies,
     getMovieById,
     setMovie,
-    updateMovie
+    updateMovie,
+    deleteMovie
 };
